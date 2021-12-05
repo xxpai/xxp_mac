@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    open -a Google\ Chrome.app
+else
+    url=https://www.google.co.jp/search?q=
+    for key in $*;
+    do
+        url=$url$key+
+    done
+    #echo $url
+    open -a Google\ Chrome.app $url
+fi

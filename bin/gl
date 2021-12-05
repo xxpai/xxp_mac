@@ -1,0 +1,40 @@
+#!/bin/bash
+if [ $# -eq 0 ]; then
+    #git log --oneline -n 15 --date=short 
+    #git log --no-merges --date=short --pretty='format:%C(yellow)%h %C(green)%cd %C(blue)%an%C(red)%d %C(reset)%s' -n 15
+    git log --date=short --pretty='format:%C(yellow)%h %C(green)%cd %C(blue)%an%C(red)%d %C(reset)%s' -n 15
+    tt=`git log --no-merges --date=short --pretty='format:%C(yellow)%h %C(green)%cd %C(blue)%an%C(red)%d %C(reset)%s' -n 15`    
+else
+    git log --date=short --pretty='format:%C(yellow)%h %C(green)%cd %C(blue)%an%C(red)%d %C(reset)%s' -n $1
+    tt=`git log --no-merges --date=short --pretty='format:%C(yellow)%h %C(green)%cd %C(blue)%an%C(red)%d %C(reset)%s' -n $1`
+fi
+uu=`uname`
+for t in $tt
+do
+    echo "last commit: $t"
+    if [ "$uu" == "Darwin" ]; then
+        echo $t | pbcopy
+    else
+        #for wsl on windows.
+        echo $t | clip.exe
+    fi
+    break
+done 
+
+
+echo
+echo -----------------------------
+rc=`git branch  | grep "*" | cut -d' ' -f 2`
+r1=`git branch -r | grep "$rc"`
+r2=`echo $r1 | grep "HEAD"`
+if [ ! -z "$r2" ]; then
+    r1=`echo $r1 | cut -d- -f1`
+fi
+echo "remote :$r1"
+if [ -z "$r1" ]; then
+    echo no remote branch
+else
+    git log --oneline $r1 -5
+fi
+
+

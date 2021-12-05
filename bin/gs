@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+echo ----diff name only----------------------------
+echo
+git diff --name-only 
+echo
+
+echo ----status------------------------------------
+git status

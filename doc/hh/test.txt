@@ -1,0 +1,4 @@
+1. gtest
+    brew install googletest
+    brew --prefix googletest
+    pkg-config --cflags --libs gtest

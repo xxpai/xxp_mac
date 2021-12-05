@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# edit=emacs
+edit=vim
+if [ -z "$(env | grep SSH.CL)" ] && [ -f $vscode ]; then
+    code1 $*
+else
+    if [ $# -eq 1 ];then
+        hh=`echo $1 | grep "\:"`
+        fl=`echo $1 | cut -d: -f1`
+        ln=`echo $1 | cut -d: -f2`
+        if [ -z "$hh" ]; then
+            $edit $fl
+        else
+            $edit +$ln $fl
+        fi
+    else
+        $edit $*
+    fi
+fi

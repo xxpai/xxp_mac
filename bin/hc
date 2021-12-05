@@ -1,0 +1,184 @@
+#!/bin/bash
+
+dhc=$HOME/xyp/hc
+dobj=$HOME/xyp/obj
+
+[ -d $dhc ] || mkdir $dhc
+[ -d $dobj ] || mkdir $dobj
+
+function run_c_cpp_cxx(){
+    cc=$1
+    h0=$2
+    h=$3
+    param1=$4
+    param2=$5
+    param3=$6
+    fn0=`echo "$h0" | cut -d'.' -f1`
+    cv=opencv4
+    exe="$dhc/$fn0"
+    [ -f "$exe" ] && rm "$exe"
+
+    CFLAGS=""
+    if [ ! -z "$(cat $h | grep include.*gtest)" ]; then
+      echo "  pkg-config --cflags --libs gtest"
+      CFLAGS="$CFLAGS $(pkg-config --cflags --libs gtest)"
+    fi
+    if [ ! -z "$(cat $h | grep include.*opencv)" ]; then
+      echo "  pkg-config --cflags --libs $cv"
+      CFLAGS="$CFLAGS $(pkg-config --cflags --libs $cv)"
+    fi
+    echo "  $cc $h0 -o $dobj/$fn0"
+    if [[ $cc == "g++" ]]; then
+      if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        $cc $h -o $dobj/$fn0 -std=c++14 -lGL -lGLU -lglut $CFLAGS
+      elif [[ "$OSTYPE" == "darwin"* ]]; then
+        jpeg="-I` brew --prefix libjpeg`/include -L` brew --prefix libjpeg`/lib -ljpeg -labsl_strings -labsl_strings_internal"
+        opengl="-framework OpenGL -framework GLUT"
+        glfw3=`pkg-config --cflags --libs glfw3`
+        glew=`pkg-config --cflags --libs glew`
+        $cc $h -o $dobj/$fn0 -std=c++17 -Wthread-safety $opengl $glfw3 $glew $jpeg $CFLAGS -Wno-deprecated
+      else
+        echo not implementation this kind of OS
+      fi
+    else
+      ssl="-I` brew --prefix openssl`/include -L` brew --prefix openssl`/lib -lssl -lcrypto"
+      $cc $h -o $dobj/$fn0 $ssl
+    fi
+    echo "  $dobj/$fn0 $param1 $param2 $param3"
+    echo
+    $dobj/$fn0 $param1 $param2 $param3
+    echo
+}
+
+
+#----------------------------------------------------
+function select_type(){
+  h0=$2
+  h=$dhc/$1/$h0
+  param1=$5
+  param2=$6
+  param3=$7
+  param4=$8
+  param5=$9
+  param6=$10
+  if [ ! -z "$h" ]; then
+    if [ "$3" == "e" ]; then
+      vv $h
+    elif [ "$3" == "r" ]; then
+      if [ "$1" == "c" ]; then
+        run_c_cpp_cxx gcc $h0 $h $param1 $param2 $param3
+      elif [ "$1" == "cpp" ]; then
+        run_c_cpp_cxx g++ $h0 $h $param1 $param2 $param3
+      elif [ "$1" == "cxx" ]; then  # for leet code etc.
+        run_c_cpp_cxx g++ $h0 $h $param1 $param2 $param3
+      elif [ "$1" == "java" ]; then
+        echo "  run_java $h0 $h $param1 $param2 $param3"
+        run_java $h0 $h $param1 $param2 $param3
+      else
+          echo "need implementation: $1"
+      fi
+    else
+        cat $h
+        echo
+        echo ----------------------------------------------------------------
+        echo "  $h0"
+        echo
+    fi
+  fi # $h destination exists
+}
+
+#----------------------------------------------------------------
+function loop_files(){
+  key=$2
+  hc=`ls $dhc/$1 | grep -e $key`
+  # no file for key: $1.
+  [ -z "$hc" -a "$3" != "e"  ] && echo "  no file: $key" && return 0
+  ct=`echo $hc | wc -w | tr -d ' '`
+
+  arr=($hc)
+  # printf 'arr: %s\n' "${arr[@]}"
+  # echo "len = ${#arr[@]}"
+  if [ ${#arr[@]} -eq 1 ]; then
+    h0=$hc
+    select_type $1 $h0 $3 $4 $5 $6 $7 $8 $9
+    return 0
+  elif [ ${#arr[@]} -gt 1 ]; then
+    # check not null $3 is a number
+    re='^[0-9]+$'
+    if ! [[ $3 =~ $re ]] && [ -n "$3" ]; then
+      echo "  wrong index: $3"
+      echo
+      return 0
+    fi
+    idx=$3
+    idx=$((idx-1))
+    if [ $idx -lt ${#arr[@]} ] && [ -n "$3" ]; then
+      h0=${arr[idx]}
+      select_type $1 $h0 $4 $5 $6 $7 $8 $9
+      return 0
+    else
+      # show index and file names
+      for i in "${!arr[@]}"; do
+        printf "    \t%s: %s\n" "$((i+1))" "${arr[$i]}"
+      done
+      [ -n "$3" ] && echo "  wrong index: $3"
+      echo
+      return 0
+    fi
+  else
+    echo not find $key
+  fi
+
+  # create new base on the first file in the same directory.
+  fm0=`ls $dhc/$1 | grep "\.$1" | head -n1`
+  fm="$dhc/$1/$fm0"
+
+  if [ "$3" == "e" ]; then
+    fname="$2"
+    [[ "$2" == *".$1" ]] || fname="$2.$1" #add ext
+    f1=$dhc/$1/$fname
+    if [ -f $fm ]; then
+        echo cp $fm $f1
+        cp $fm $f1
+    fi
+    if [ ! -f $f1 ]; then
+      touch $f1
+    fi
+    vv $f1
+  fi
+}
+
+#================================================================
+if [ -d $dobj ]; then
+  mkdir -p $dobj
+fi
+if [ $# -eq 0 ]; then
+  echo need param as key
+  echo
+  tt=`ls $dhc`
+  for t in $tt
+  do
+    echo "    $t"
+  done
+elif [ $# -eq 1 ]; then
+  if [ "$1" == "clear" ]; then
+    rm $dobj/*
+  else
+    dir="$dhc/$1"
+    if [ ! -e "$dir" ]; then
+      echo "  Not found dir: $dir"
+      read -n1 -p "  mkdir? (y/N): " yn; [[ $yn = [yY] ]] && mkdir $dir; echo " $dir" || echo "  do nothing"
+    else
+      echo need param as key
+      echo
+      tt=`ls $dir`
+      for t in $tt
+      do
+          echo "    $t"
+      done
+      echo
+    fi
+  fi
+else
+  loop_files $1 $2 $3 $4 $5 $6 $7 $8 $9
+fi

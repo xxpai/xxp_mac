@@ -1,0 +1,62 @@
+#!/bin/bash
+
+function create_local_git(){
+    echo "   create local git, add files, and first commit"
+    read -p "  Hit enter: "
+    git init
+    git status
+    read -p "  Hit enter to add files: "
+    git config user.name wanghj
+    git add .
+    git commit -a -m "first commit"
+    git status
+}
+
+function create_remote_git(){
+
+    read -p "  Hit enter: "
+    echo "   begin to create local repo and github public repo"
+    pj="{\"name\":\"$1\"}"
+    cmd=`echo curl -H \"Authorization: token $GITHUB_TOKEN\" --data \'$pj\' https://api.github.com/user/repos`
+    echo $cmd
+    eval "$cmd"
+}
+
+function push_to_remote(){
+    git remote add origin https://github.com/xypai/$pp.git
+    #git push --set-upstream origin master
+    read -p "  Hit enter to push to remote: "
+    git push -u origin master
+}
+
+if [ $# -eq 0 ]; then
+    open -a Google\ Chrome.app https://github.com/xypai
+else
+    ls -l
+    pp=`pwd | rev |cut -d / -f1 | rev`
+    echo "    repo name: $pp ---->from pwd"
+    #---------------------------------------------------
+    echo
+    read -p "   1. create remote git :(YN, default yes):" choice
+    case "$choice" in
+    y|Y ) echo "     yes"; create_remote_git $pp ;;
+    n|N ) echo "     no";;
+    * )   echo "     yes"; create_remote_git $pp;;
+    esac
+    #---------------------------------------------------
+    echo
+    read -p "   2. create local git :(YN, default yes):" choice
+    case "$choice" in
+    y|Y ) echo "     yes"; create_local_git;;
+    n|N ) echo "     no";;
+    * )   echo "     yes"; create_local_git;;
+    esac
+    #---------------------------------------------------
+    echo
+    read -p "   3. push to remote :(YN, default yes):" choice
+    case "$choice" in
+    y|Y ) echo "     yes"; push_to_remote $pp;;
+    n|N ) echo "     no";;
+    * )   echo "     yes"; push_to_remote $pp;;
+    esac
+fi

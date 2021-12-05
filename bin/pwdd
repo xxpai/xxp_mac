@@ -1,0 +1,10 @@
+#!/bin/bash
+
+uu=`uname`
+if [ "$uu" == "Darwin" ]; then
+    pwd
+    dirs +0
+    dirs +0 | pbcopy
+else
+    echo "  need implementation"
+fi

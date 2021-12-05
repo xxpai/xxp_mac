@@ -1,0 +1,13 @@
+#!/bin/bash
+# ref: https://stackoverflow.com/questions/30065227/run-open-vscode-from-mac-terminal
+
+if [ $# -eq 0 ]; then
+    open -a "$vsdir"
+else
+    zz=`echo $1 | grep \:`
+    if [ -z $zz ]; then
+        VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args $*
+    else
+        VSCODE_CWD="$PWD" open -n -b "com.microsoft.VSCode" --args -g $1;
+    fi
+fi

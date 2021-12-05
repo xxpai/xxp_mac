@@ -1,0 +1,30 @@
+#!/bin/bash
+# time ( gg xxx ) => count time cost
+ext="*$2"
+if [ "${2:0:1}" == "." ];then
+  ext="*$2"
+fi
+# full file name.
+# if [ "${2:0:4}" == "full" ];then
+#   ext="*${2:4}*"
+# fi
+
+if [ $# -eq 1 ]; then
+  #grep ignore binary file => -InH
+  find ./ -not -path '*/\.*' -not -path '*.hex' -not -path '*.so' -not -path '*/obj/*' -not -path '*.tflite' -not -path '*/build/*' -type f  -print0 | xargs -0 grep -InH "$1"	-n --color=always
+elif [ $# -eq 2 ]; then
+  find ./ -not -path '*/\.*' -not -path '*/build/*'  -type f -name "$ext" -print0 | xargs  -0 grep -H "$1" -n --color=always
+elif [ $# -eq 3 ]; then
+  find ./ -not -path '*/\.*' -name "$ext" -print0 | xargs -0 grep -H --color -n "$1" | grep -v "$3" | grep --color "$1"
+elif [ $# -eq 4 ]; then
+  find ./ -not -path '*/\.*' -name "$ext" -print0 | xargs -0 grep -H --color -n "$1" | grep -v "$3" | grep -v "$4" | grep --color "$1"
+elif [ $# -eq 5 ]; then
+  find ./ -not -path '*/\.*' -name "$ext" -print0 | xargs -0 grep -H --color -n "$1" | grep -v "$3" | grep -v "$4" | grep -v "$5" | grep --color "$1"
+elif [ $# -eq 6 ]; then
+  find ./ -not -path '*/\.*' -name "$ext" -print0 | xargs -0 grep -H --color -n "$1" | grep -v "$3" | grep -v "$4" | grep -v "$5" | grep -v "$6" | grep --color "$1"
+else
+  echo "  gg key"
+  echo "  gg key *file"
+  echo "  gg key1 not_key2 *file"
+fi
+

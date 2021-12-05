@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if [ -z "$(env | grep SSH.CL)" ] && [ -f $vscode ]; then
+    vv=code1
+else
+    vv=emacs
+fi
+
+if [ $# -eq 0 ]; then
+  echo need param
+  exit 0
+fi
+
+# current dir first.
+fcurr=./$1
+if [  -f $fcurr  ]; then
+  $vv $fcurr
+  exit 0
+fi
+
+
+ee=`echo $1 | grep -e "\.py"`
+if [ ! -z $ee ]; then
+  $vv $1
+  exit 0
+fi
+
+f1=~/xyp/bin/goo
+f=~/xyp/bin/$1
+
+
+if [ ! -f $f ]; then
+  cp $f1 $f
+fi
+$vv $f

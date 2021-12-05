@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo need param
+elif [ $# -eq 1 ]; then
+    #ignore case
+    #no show error.
+    # -L to find symbol links
+    find ./ -iname "*$1*" -o  -iname "*$1*.*" -path ./.git -prune 2>/dev/null
+    #find ./ -name "*$1"
+else 
+    find ./ -maxdepth 1 -iname "*$1*" -o  -iname "*$1*.*" -path ./.git -prune 2>/dev/null
+fi
+    

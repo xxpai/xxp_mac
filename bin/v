@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#peco | cut -d : -f 1-2 | xargs vv
+fzf --ansi | cut -d : -f 1-2 | xargs vv
+#fzy | cut -d: -f 1-2 | xargs vv

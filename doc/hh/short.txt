@@ -1,0 +1,21 @@
+h,~/xyp
+b,~/xyp/bin
+c,~/xyp/doc
+hh,~/xyp/doc/hh
+hc,~/xyp/hc
+
+d,~/Downloads/
+do,~/Documents/
+de,~/Desktop/
+ssh,~/.ssh/
+
+zw,~/xyp/doc/zhongwen
+tang,~/xyp/doc/zhongwen/tang
+song,~/xyp/doc/zhongwen/song
+
+rm_code,~/Library/Application\ Support/Code/User/workspaceStorage
+rm_ios,~/Library/Developer/Xcode/iOS\ DeviceSupport/
+rm_mobile,~/Library/Application\ Support/MobileSync/Backup
+rm_build,~/Library/Developer/Xcode/DerivedData
+rm_simu,~/Library/Developer/CoreSimulator/Devices
+rm_caches,~/Library/Caches

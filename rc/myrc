@@ -1,0 +1,65 @@
+#!/bin/bash
+
+#---setup path----------------------------------------------------
+export PATH=~/xyp/bin:$PATH  #my bin path
+
+#---setup alias----------------------------------------------------
+alias ls='ls -G'
+alias l='ls -l'
+alias u='cd ..'
+
+# ----function: for g-------------------------------------
+function cd_line(){
+  line="$1"
+  key=`echo "$line" | awk '{split($0,a,","); print a[1]}'`
+  dst=`echo "$line" | awk '{split($0,a,","); print a[2]}'`
+  echo "cd $line"
+  echo
+  dir2=`sed "s|~|$HOME|" <<<"${dst}"`
+  dir=`sed "s| |\ |" <<<"${dir2}"`
+  cd "$dir"
+}
+
+function g(){
+  key=$1
+  bdir=$HOME/xyp
+  if [ -z "$key" ]; then
+    echo "  need key"
+    echo
+    return
+  fi
+  OLDIFS=$IFS
+  IFS=$'\n' read -d '' -a arr < <(grep "^$key," $bdir/doc/hh/short.txt)
+  # IFS=$'\n' read -d '' -a arr < <(grep "^$key.*" $bdir/doc/hh/short.txt)
+  # IFS=$'\n' read -d '' -a arr < <(grep "$key.*\," $bdir/doc/hh/short.txt)
+  IFS=$OLDIFS # restore IFS
+  # printf 'arr: %s\n' "${arr[@]}"
+  # echo "len = ${#arr[@]}"
+  if [ ${#arr[@]} -eq 1 ]; then
+    cd_line "${arr[0]}"
+    return
+  elif [ ${#arr[@]} -gt 1 ]; then
+    # check not null $2 is a number
+    re='^[0-9]+$'
+    if ! [[ $2 =~ $re ]] && [ -n "$2" ]; then
+        echo "  wrong index: $2"
+        return
+    fi
+    idx=$2
+    idx=$((idx-1))
+    if [ $idx -lt ${#arr[@]} ] && [ -n "$2" ]; then
+      cd_line "${arr[$idx]}"
+      return
+    else
+        for i in "${!arr[@]}"; do
+            printf "    \t%s: %s\n" "$((i+1))" "${arr[$i]}"
+        done
+        [ -n "$2" ] && echo "  wrong index: $2"
+        echo
+        return
+    fi
+  else
+    echo "not find : $key in short file"
+    echo "hh short e => add new short "
+  fi
+}

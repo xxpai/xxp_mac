@@ -1,0 +1,97 @@
+
+delete remote branch
+    git push --delete origin branch_name
+
+delete local branch
+    git branch -d branch_name
+
+merge from fork branch
+    git pull git@github.com:xypai/xyp_mac.git master
+    git pull -X theirs git@github.com:xypai/xyp_mac.git develop
+    git pull -X ours git@github.com:xypai/xyp_mac.git develop
+
+add remote server
+    git remote remove origin
+    git remote add origin http://gitlab.example.com/raveren/kint.git
+    git push
+
+change remote server
+    git remote set-url origin git@github.com:xypai/xyp_mac.git
+
+git config show
+    gconf
+    git config --list
+
+git alias
+    ga  xx xxx
+    git config --global alias.xx xxx
+
+git checkout one file --> commit old one
+    git co 0e514e9 -- .//NRPalmCore/common/LooperProc.cpp
+
+git all files
+    git rev-list --all --objects # gitbig to find big files.
+
+git add submodule
+    git submodule add git@github.com:xypai/xyp_mac.git
+git change submodule
+    modify .gitmodules
+    git submodule sync
+    git submodule update --init --recursive
+    git submodule update --remote
+    cd core
+    git fetch --prune # clean local , sync with server.
+git clean local all
+    git clean -d -x -f
+git restore delete file
+    git rev-list -n 1 HEAD -- <file_path>
+    git checkout <deleting_commit>^ -- <file_path>
+    #git checkout $(git rev-list -n 1 HEAD -- "$file")^ -- "$file"
+
+git with vim
+    git config --global core.editor 'vim -c "set fenc=utf-8"'
+
+git grep history
+    gith MyEvent
+    git grep MyEvent $(git rev-list --all)
+git pull
+    git config pull.rebase false  # merge (the default strategy)
+    git config pull.rebase true   # rebase
+    git config pull.ff only       # fast-forward only
+
+git tag
+    add tag
+        git tag -a JCB100 -m 'aws JCB100' ac66d7f
+    push to remote
+        git push origin JCB100
+    list up
+        git tag
+        git show JCB100
+    delete local
+        git tag -d TAGNAME
+    delete from remote
+        git push origin :TAGNAME
+        git push --delete origin TAGNAME
+
+gitk
+    brew install git-gui
+
+subtree from folder(trying)
+    git subtree add --prefix=hc git@github.com:xypai/hc.git master
+    git subtree push --prefix=hc git@github.com:xypai/hc.git master
+    git subtree pull --prefix=hc git@github.com:xypai/hc.git master
+
+rm file from all branches
+    git filter-branch --tree-filter 'rm -f .idea/vcs.xml' -- --all
+
+pull rebase
+    git config --global pull.rebase true
+
+convert last 2 commit into one
+    ref: https://stackoverflow.com/questions/2563632/how-can-i-merge-two-commits-into-one-if-i-already-started-rebase
+    git rebase --interactive HEAD~2
+    pick b76d157 b
+    pick a931ac7 c  => modify to squash
+
+multi user:
+    git config user.name xypai

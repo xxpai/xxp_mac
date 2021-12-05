@@ -1,0 +1,62 @@
+#!/bin/bash
+
+function open_dir(){
+    para=$1
+    dst=`echo "$para" | awk '{split($0,a,","); print a[2]}'`
+    dir=`sed "s|~|$HOME|" <<<"${dst}"`
+    echo "open: $1"
+    open "${dir}"
+}
+
+# ref: https://unix.stackexchange.com/questions/485221/read-lines-into-array-one-element-per-line-using-bash
+function open_short(){
+    short_cut=$HOME/xyp/doc/hh/short.txt
+    key=$1
+    if [[ $key == *"*" ]] ;then
+        # end with *, but not with .* ==> change last * to .*
+        if ! [[ $key == *".*" ]] ;then
+            key=`echo $key | sed 's/\*$/\.\*/'`
+            # echo $key
+        fi
+        IFS=$'\n' read -d '' -a arr < <(grep "^$key," $short_cut)
+    else
+        IFS=$'\n' read -d '' -a arr < <(grep "^$key.*" $short_cut)
+    fi
+    # printf 'arr: %s\n' "${arr[@]}"
+    # echo "len = ${#arr[@]}"
+    if [ ${#arr[@]} -eq 1 ]; then
+        open_dir "${arr[0]}"
+    elif [ ${#arr[@]} -gt 1 ]; then
+        # check not null $2 is a number
+        re='^[0-9]+$'
+        if ! [[ $2 =~ $re ]] && [ -n "$2" ]; then
+            echo "  wrong index: $2"
+            return 0
+        fi
+
+        idx=$2
+        idx=$((idx-1))
+        if [ $idx -lt ${#arr[@]} ] && [ -n "$2" ]; then
+            open_dir "${arr[$idx]}"
+        else
+            for i in "${!arr[@]}"; do
+                printf "    \t%s: %s\n" "$((i+1))" "${arr[$i]}"
+            done
+            [ -n "$2" ] && echo "  wrong index: $2"
+            echo
+        fi
+    else
+        echo not find $key
+    fi
+}
+
+if [ -z "$1" ]; then
+    open .
+else
+    if [ -d "$1" ]; then
+        echo $1
+        open $1
+    else
+        open_short $1 $2
+    fi
+fi

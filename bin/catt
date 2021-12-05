@@ -1,0 +1,22 @@
+#!/bin/bash
+# add test ok
+if [ $# -eq 0 ]; then
+  echo need param
+  exit 0
+fi
+
+f=~/xyp/bin/$1
+if [ -f $f ]; then
+   cat $f
+   echo
+   exit 0
+fi
+
+
+fcurr=./$1
+if [  -f $fcurr  ]; then
+  cat $fcurr
+  echo
+fi
+
+
