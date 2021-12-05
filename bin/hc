@@ -160,6 +160,7 @@ if [ $# -eq 0 ]; then
   do
     echo "    $t"
   done
+  echo
 elif [ $# -eq 1 ]; then
   if [ "$1" == "clear" ]; then
     rm $dobj/*

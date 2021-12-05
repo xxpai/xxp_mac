@@ -63,3 +63,9 @@ function g(){
     echo "hh short e => add new short "
   fi
 }
+
+complete_hp () {
+  list=`ls ~/oh/doc/hp`
+  COMPREPLY=( `compgen -W "$list"  ${COMP_WORDS[COMP_CWORD]}`)
+}
+[[ $0 = -bash ]] && complete -F complete_hp hp

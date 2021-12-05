@@ -1,0 +1,98 @@
+#!/bin/bash
+
+bdir=$HOME/xyp/doc/hp
+[ -d $bdir ] || mkdir -p $bdir
+
+function select_hp(){
+  h0=$2
+  h=$bdir/$1/$h0
+  # echo $h $3 $4
+  if [ "$3" == "e" ]; then
+    echo "  edit $h"
+    echo
+    vv $h
+  else
+    cat $h
+    echo
+    echo ----------------------------------------------------------------
+    echo "  $h0"
+    echo
+  fi
+}
+
+#----------------------------------------------------------------
+function loop_files(){
+  key=$2
+  hp=`ls $bdir/$1 | grep -e $key`
+  [ -z "$hp" -a "$3" != "e"  ] && echo "  no file: $key" && return 0
+  ct=`echo $hp | wc -w | tr -d ' '`
+
+  arr=($hp)
+  # printf 'arr: %s\n' "${arr[@]}"
+  # echo "len = ${#arr[@]}"
+
+  if [ ${#arr[@]} -eq 1 ]; then
+    select_hp $1 "${arr[0]}" $3
+    return 0
+  elif [ ${#arr[@]} -gt 1 ]; then
+    # check not null $3 is a number
+    re='^[0-9]+$'
+    if ! [[ $3 =~ $re ]] && [ -n "$3" ]; then
+      echo "  wrong index: $3"
+      return 0
+    fi
+    idx=$3
+    idx=$((idx-1))
+    if [ $idx -lt ${#arr[@]} ] && [ -n "$3" ]; then
+      select_hp $1 "${arr[$idx]}" $4
+      return 0
+    else
+      for i in "${!arr[@]}"; do
+        printf "    \t%s: %s\n" "$((i+1))" "${arr[$i]}"
+      done
+      [ -n "$3" ] && echo "  wrong index: $3"
+      echo
+      return 0
+    fi
+  else
+    echo not find $key
+  fi
+
+  if [ "$3" == "e" ]; then
+    fname="$2"
+    [[ "$2" == *".txt" ]] || fname="$2.txt" #add ext
+    f1=$bdir/$1/$fname
+    if [ ! -f $f1 ]; then
+      touch $f1
+    fi
+    vv $f1
+  fi
+}
+
+#================================================================
+if [ $# -eq 0 ]; then
+    echo need param as key
+    echo
+    tt=`ls $bdir/`
+    for t in $tt
+    do
+        echo "    $t"
+    done
+elif [ $# -eq 1 ]; then
+    dir="$bdir/$1"
+    if [ ! -e "$dir" ]; then
+        echo "  Not found dir: $dir"
+        read -n1 -p "  mkdir? (y/N): " yn; [[ $yn = [yY] ]] && mkdir $dir; echo " $dir" || echo "  do nothing"
+    else
+        echo need param as key
+        echo
+        tt=`ls $dir`
+        for t in $tt
+        do
+            echo "    $t"
+        done
+        echo
+    fi
+else
+    loop_files $1 $2 $3 $4 $5 $6 $7 $8 $9
+fi

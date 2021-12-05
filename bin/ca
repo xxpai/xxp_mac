@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo need param for calculating.
+else
+    param=`echo "$*" | tr {[]} \(\(\)\)`
+    echo "      $param"
+    defhex="hex2 = lambda v: '{:x}'.format(v);"
+    defbin="bin2 = lambda v: '{:b}'.format(v);"
+    info="[ print('hex:',hex2(a), '\nbin:', bin2(a), '\tlen:', len('{}'.format(bin2(a)))) for a in {v} if type(a) is int ]"
+    python3 -c "from math import *; fa = factorial; a=$param; v=a; print('dec:',v); $defhex $defbin $info"
+fi

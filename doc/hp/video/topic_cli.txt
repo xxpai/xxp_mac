@@ -1,0 +1,21 @@
+1. 用电脑时，如何提高效率
+
+    建议1： 多用键盘，习惯使用命令。
+
+    建议2： 精简命令
+
+    建议3：用github把自己的命令存起来
+
+2. how
+    怎么简化命令呢？
+    以现有的命令为基础，制作自己的命令。
+    bash 编程。
+
+2.1 设置 .bash_profile
+
+    cd ~
+    git clone git@xypai.github.com:xypai/xyp_mac.git
+    mv xyp_mac xyp
+
+    # add following line to ~/.bash_profile
+    [ -f ~/xyp/rc/myrc ] && . ~/xyp/rc/myrc
